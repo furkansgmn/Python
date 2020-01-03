@@ -1,0 +1,306 @@
+import turtle
+import math
+import random
+import time
+import winsound
+
+#Screen
+wn = turtle.Screen()
+wn.title("The Muslera Game")
+wn.bgcolor("green")
+wn.tracer(4.8)
+
+#Images
+image="muslera.gif"
+wn.addshape(image)
+image2 = "ball.gif"
+wn.addshape(image2)
+image3 = "kale.gif"
+wn.addshape(image3)
+image4 = "ofsayt.gif"
+wn.addshape(image4)
+image5 = "goldenball.gif"
+wn.addshape(image5)
+image6 = "redcard.gif"
+wn.addshape(image6)
+image7 = "oyunsonu.gif"
+wn.addshape(image7)
+
+
+#Player as Muslera
+player = turtle.Turtle()
+player.color("blue")
+player.shape(image)
+player.penup()
+player.speed(0)
+speed = 1 #speedofPlayer
+life=3
+
+#Border
+border = turtle.Turtle()
+border.color("white")
+border.penup()
+border.setposition(-500,-300)
+border.pendown()
+border.pensize(3)
+for i in range(4):
+    if i%2 == 0 :
+        border.forward(1000)
+    else:
+        border.forward(600)
+    border.left(90)
+border.hideturtle()
+
+#Lines
+lines = []
+
+for h in range(3):
+    lines.append(turtle.Turtle())
+    lines[h].color("white")
+    lines[h].penup()
+    lines[h].setposition(-500,(h-1)*150)
+    lines[h].pendown()
+    lines[h].pensize(3)
+    lines[h].forward(1000)
+    lines[h].hideturtle()
+    
+border2 = turtle.Turtle()
+border2.color("white")
+border2.penup()
+border2.setposition(-500,-300)
+border2.pendown()
+border2.pensize(3)
+for i in range(4):
+    if i%2 == 0 :
+        border2.forward(1000)
+    else:
+        border2.forward(150)
+    border2.left(90)
+border2.hideturtle()
+
+
+#Offside Flag
+offside = turtle.Turtle()
+offside.color("red")
+offside.shape(image4)
+offside.penup()
+offside.speed(0)
+offside.setposition(2000,-75)
+offside.right(180)
+
+#Enemy as Red Card
+maxEnemy = 8
+enemies = []
+for x in range(maxEnemy):
+    enemies.append(turtle.Turtle())
+    enemies[x].color("purple")
+    enemies[x].shape(image6)
+    enemies[x].penup()
+    enemies[x].speed(0)
+    enemies[x].setposition(1000,-75)
+    enemies[x].right(180)
+
+#For Write Score and Life on screen
+board = turtle.Turtle()
+board.color("white")
+board.penup()
+board.setposition(-500,-300)
+board.pendown()
+board.pensize(3)
+
+#Balls
+maxBalls = 8
+speed1 = 0.4 #speed of balls
+balls = []
+for x in range(maxBalls):
+    balls.append(turtle.Turtle())
+    balls[x].color("black")
+    balls[x].shape(image2)
+    balls[x].penup()
+    balls[x].speed(0)
+    balls[x].setposition(1000,-75)
+    balls[x].right(180)
+ 
+    
+    
+#Special Ball as Golden Ball   
+specialBall = turtle.Turtle()
+specialBall.color("red")
+specialBall.shape(image5)
+specialBall.penup()
+specialBall.speed(0)
+specialBall.setposition(1000,-75)
+specialBall.right(180)
+
+#Goals
+goals = []
+for i in range(4):
+    goals.append(turtle.Turtle())
+    goals[i].color("white")
+    goals[i].shape(image3)
+    goals[i].penup()
+    goals[i].speed(0)
+    if i==0:
+        goals[i].setposition(-450,225)
+    if i==1:
+        goals[i].setposition(-450,75)
+    if i==2:
+        goals[i].setposition(-450,-75)
+    if i==3:
+        goals[i].setposition(-450,-225)
+
+#Function that we use to add elements on screen
+def bring(x,enemies,balls):
+    p=0
+    f=0
+    a = random.randint(0,3)*150 - 225
+    for u in range(8):
+        if a == balls[u].ycor():
+            if math.sqrt(math.pow(balls[u].xcor()-450,2)) <= 80 :
+               p = p +1
+    for u in range(8):
+        if a == enemies[u].ycor():
+            if math.sqrt(math.pow(enemies[u].xcor()-450,2)) <= 80 :
+               f = f +1
+    if p==0 and f==0:
+        x.setposition(450,a)
+        
+#Function that we use to control positions of two differents elements
+#There is a formule for that
+def isCollision(a,b):
+    d=math.sqrt(math.pow(a.xcor()-b.xcor(),2) + math.pow(a.ycor()-b.ycor(),2))
+    if d < 50:
+        return True
+    else:
+        return False
+    
+
+#Move of Player
+def turnLeft():
+        player.left(30)
+def turnRight():
+        player.right(30)
+def decreaseSpeed():
+    global speed
+    if speed > 0:
+        speed -= 1
+def increaseSpeed():
+    global speed
+    if speed < maxSpeed:
+        speed += 1
+turtle.listen()
+turtle.onkey(decreaseSpeed, "Down")
+turtle.onkey(increaseSpeed, "Up")
+turtle.onkey(turnLeft, "Left")
+turtle.onkey(turnRight, "Right")
+
+maxSpeed = 10 #Maximum Speed of Player
+score = 0
+game = True
+while game:
+    v=0
+    c = 0
+    d = 0
+    player.forward(speed)
+    if specialBall.xcor() < 451:
+        specialBall.forward(0.8)
+    if score%11 == 1 and player.xcor() >= 150 and player.xcor() <=200:
+        specialBall.setposition(random.randint(-150,150),random.randint(0,3)*150-225)
+    if isCollision(player,specialBall):
+        winsound.PlaySound("muslera.wav", winsound.SND_ASYNC)
+        if specialBall.ycor() == 75:
+            score = score + 10
+            c = 1
+        elif specialBall.ycor() == -75:
+            winsound.PlaySound("ofsayt.wav", winsound.SND_ASYNC)
+            offside.setposition(-240,random.randint(0,3)*150-225)
+        elif specialBall.ycor() == 225:
+            maxSpeed = maxSpeed + 1
+        elif specialBall.ycor() == -225:
+            life = life + 1
+            d = 1
+        specialBall.setposition(1000,-55)
+    for i in range(8):
+        if balls[i].xcor() < 451:
+            balls[i].forward(speed1)
+        if enemies[i].xcor() < 451:
+            enemies[i].forward(speed1)
+        if balls[i].xcor() > 451 :
+            bring(balls[i],balls,enemies) 
+        if enemies[i].xcor () > 451:
+            bring(enemies[i],enemies,balls)             
+        if d==1 or isCollision(specialBall,goals[0]) or isCollision(specialBall,goals[1]) or isCollision(specialBall,goals[2]) or isCollision(specialBall,goals[3]) or isCollision(balls[i],goals[0]) or isCollision(balls[i],goals[1]) or isCollision(balls[i],goals[2]) or isCollision(balls[i],goals[3]):
+            if d != 1:
+                life = life -1
+                specialBall.setposition(1000,-75)
+                balls[i].setposition(1000,-75)
+                winsound.PlaySound("gol.wav", winsound.SND_ASYNC)
+            board.undo()
+            board.penup()
+            board.hideturtle()
+            board.setposition(310,310)
+            scorestring= "Life: %s" %life
+            board.write(scorestring, False, align="left", font=("Arial",14,"normal"))
+        if c==1 or isCollision(balls[i],player) or isCollision(offside,balls[i]) or isCollision(enemies[i],player) or player.xcor() < -500 or player.xcor() > 400 or player.ycor() < -300 or player.ycor() > 300 :
+            if isCollision(balls[i],player):
+                balls[i].setposition(1000,-75)
+                score = score +1
+                winsound.PlaySound("muslera.wav", winsound.SND_ASYNC)
+            if isCollision(offside,balls[i]):
+                balls[i].setposition(1000,-75)
+                score = score +1
+            if isCollision(enemies[i],player):
+                winsound.PlaySound("kırmızı.wav", winsound.SND_ASYNC)
+                score = score -1
+                enemies[i].setposition(1000,-75)
+            if player.xcor() < -500 or player.xcor() > 400 or player.ycor() < -300 or player.ycor() > 300 :
+                player.setposition(0,0)
+                speed = 0
+                score = score - 1
+            border.undo()
+            border.penup()
+            border.hideturtle()
+            border.setposition(-310,310)
+            scorestring= "Score: %s" %score
+            border.write(scorestring, False, align="left", font=("Arial",14,"normal"))
+        if enemies[i].xcor() < -400:
+            enemies[i].setposition(1000,-75)
+    if score % 10 == 3 and offside.xcor() != 2000:
+        offside.setposition(2000,-75)
+    if v==0:
+        if score >= 0 and score < 5:
+            speed1 = 0.4
+        if score >= 5 and score <= 20:
+            speed1 = 0.6
+        elif score >=21 and score <= 35:
+            speed1 = 0.9
+        elif score >=36 and score <= 50:
+            speed1 = 1.4
+        elif score >=51 :
+            speed1 = 1.8      
+    if life <= 0:
+        player.shape(image7)
+        game = False
+
+
+        
+        
+
+                    
+
+            
+        
+    
+            
+            
+    
+            
+            
+    
+        
+    
+        
+    
+    
+    
+
