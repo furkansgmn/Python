@@ -1,7 +1,6 @@
 import turtle
 import math
 import random
-import time
 import winsound
 
 #Screen
@@ -279,9 +278,9 @@ while game:
         elif score >=51 :
             speed1 = 1.8      
     if life <= 0:
-        player.shape(image7)
         game = False
-
+if game == False:
+    player.shape(image7)
 
         
         
